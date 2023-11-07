@@ -1,7 +1,9 @@
 
 #include <iostream>
+#include <fstream>
+#include <vector>
 
-#include "SFML/Main.hpp"
+#include "view.h"
 #include "SFML/Graphics.hpp"
 
 const sf::Vector2f gravityForce = sf::Vector2f(0.0f, 1.0f);
@@ -9,28 +11,97 @@ const sf::Vector2f gravityForce = sf::Vector2f(0.0f, 1.0f);
 const float kHorizontalMaxSpeed = 10;
 sf::Vector2f previousPosition;
 
+
+struct Ground {
+	sf::Vector2f position;
+	sf::RectangleShape shape;
+};
+
+std::vector<Ground> loadObstacles(const std::string& filename) {
+	std::vector<Ground> obstacles;
+	std::ifstream file;
+	file.open(filename);
+
+	if (file.is_open()) {
+		int x;
+		int y;
+		int width;
+		int height;
+		int color_r;
+		int color_g;
+		int color_b;
+		while (file >> x >> y >> width >> height >> color_r >> color_g >> color_b) {
+			Ground obstacle;
+			obstacle.position.x = x;
+			obstacle.position.y = y;
+			obstacle.shape.setSize(sf::Vector2f(width, height));
+			obstacle.shape.setFillColor(sf::Color(color_r, color_g, color_b));
+
+			obstacles.push_back(obstacle);
+		}
+
+		file.close();
+	}
+	else {
+		std::cout << "Echec de l'ouverture du fichier." << std::endl;
+
+	}
+
+	return obstacles;
+}
+
 int main()
 {
+	std::vector<Ground> grounds = loadObstacles("obstacles.txt");
+
+
+
 	sf::RenderWindow window(sf::VideoMode(800, 600), "The Game");
+	View view(800, 600);
 
 	// Basic Setup of the window
 	// Vertical sync, framerate
 	window.setVerticalSyncEnabled(true);
-	window.setFramerateLimit(30);
+	window.setFramerateLimit(3000);
 
 	// Define a Shape
 	// https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1Shape.php
-	sf::RectangleShape shape(sf::Vector2f(50, 50));
-	sf::RectangleShape sol(sf::Vector2f(500, 50));
-	// set the shape color to green
-	shape.setFillColor(sf::Color(150, 0, 0));
-	sol.setFillColor(sf::Color(0, 150, 0));
+	
 
-	// define a position
+	sf::RectangleShape shape(sf::Vector2f(50, 50));
+	shape.setFillColor(sf::Color(150, 0, 0));
 	shape.setOrigin(shape.getSize().x / 2, shape.getSize().y / 2);
 	shape.setPosition(window.getSize().x / 2.0f, window.getSize().y / 2.0f);
-	sol.setOrigin(sol.getSize().x / 2, sol.getSize().y / 2);
-	sol.setPosition(window.getSize().x / 2.0f, window.getSize().y / 1.5f);
+
+
+
+
+
+	Ground ground1;
+	ground1.position = sf::Vector2f(400, 500);
+	ground1.shape = sf::RectangleShape(sf::Vector2f(200, 50));
+	ground1.shape.setFillColor(sf::Color(0, 150, 0));
+	ground1.shape.setOrigin(ground1.shape.getSize().x / 2, ground1.shape.getSize().y / 2);
+	ground1.shape.setPosition(ground1.position);
+	grounds.push_back(ground1);
+
+	Ground ground2;
+	ground2.position = sf::Vector2f(200, 400);
+	ground2.shape = sf::RectangleShape(sf::Vector2f(100, 50));
+	ground2.shape.setFillColor(sf::Color(0, 150, 0));
+	ground2.shape.setOrigin(ground2.shape.getSize().x / 2, ground2.shape.getSize().y / 2);
+	ground2.shape.setPosition(ground2.position);
+	grounds.push_back(ground2);
+
+
+	Ground ground3;
+	ground3.position = sf::Vector2f(600, 600);
+	ground3.shape = sf::RectangleShape(sf::Vector2f(1000, 50));
+	ground3.shape.setFillColor(sf::Color(0, 0, 150));
+	ground3.shape.setOrigin(ground3.shape.getSize().x / 2, ground3.shape.getSize().y / 2);
+	ground3.shape.setPosition(ground3.position);
+	grounds.push_back(ground3);
+
 
 	sf::Vector2f speed = sf::Vector2f(0, 0);
 	sf::Vector2f acceleration = sf::Vector2f(0, 0);
@@ -41,17 +112,30 @@ int main()
 
 	while (window.isOpen())
 	{
+	
 
-		// on inspecte tous les évènements de la fenêtre qui ont été émis depuis la précédente itération
 		sf::Event event;
 
 		//bool isGrounded = shape.getPosition().y >= (window.getSize().y - shape.getSize().y / 2);
-		bool isGrounded = shape.getGlobalBounds().intersects(sol.getGlobalBounds());
+		bool isGrounded = false;
+
+		for (Ground& ground : grounds) {
+			if (shape.getGlobalBounds().intersects(ground.shape.getGlobalBounds())) {
+				isGrounded = true;
+				
+			}
+		}
+
 		
 		
 
 		jumpForce = sf::Vector2f(0.0f, 0.0f);
 		moveForce = sf::Vector2f(0.0f, 0.0f);
+
+		sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+		sf::Vector2i mouse_tile_coord(mouse_pos.x / 50, mouse_pos.y / 50);
+
+
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
@@ -84,13 +168,6 @@ int main()
 			sf::Vector2i newPos;
 			switch (event.type)
 			{
-
-			case sf::Event::MouseButtonPressed:
-				newPos = sf::Mouse::getPosition(window);
-				speed = sf::Vector2f(0, 0);
-				shape.setPosition(newPos.x, newPos.y);
-				break;
-
 			case sf::Event::Closed:
 				window.close();
 				break;
@@ -101,27 +178,28 @@ int main()
 
 		}
 
+		
 
 
-		// Graphical Region
+
 		window.clear(sf::Color::Black);
 
-		// acceleration is a summ of forces ---------------------------------
+	
 		acceleration = sf::Vector2f(0, 0);
 
-		if (!shape.getGlobalBounds().intersects(sol.getGlobalBounds()))
+		if (!isGrounded)
 		{
 			acceleration += gravityForce;
 		}
 		else
 		{
-			speed.y = -2;
+			speed.y = -0.5;
 		}
 
 		acceleration += jumpForce;
 		acceleration += moveForce;
 
-		// Speed is a sum of acceleration -----------------------------------------
+		
 		speed += acceleration;
 		if (!isGrounded)
 		{
@@ -133,16 +211,11 @@ int main()
 		}
 		previousPosition = shape.getPosition();
 
-		// Position is a sum of speeds -----------------------------------------------
 		shape.setPosition(shape.getPosition() + speed);
 		
 		
 
-		if (shape.getGlobalBounds().intersects(sol.getGlobalBounds())) 
-		{
-			//shape.setPosition(previousPosition);
-			speed.y = 0;
-		}
+		
 
 		std::cout << std::endl;
 		std::cout << "is grounded ?" << isGrounded << std::endl;
@@ -150,12 +223,18 @@ int main()
 		std::cout << "Vitesse : \tX=" << speed.x << ":\tY=" << speed.y << std::endl;
 		std::cout << "Position : \tX=" << shape.getPosition().x << ":\tY=" << shape.getPosition().y << std::endl;
 
-		window.draw(shape);
-		window.draw(sol);
+		for (const Ground& ground : grounds) {
+			window.draw(ground.shape);
+		}
+		view.setCenter(shape.getPosition());
 
-		// Window Display
+		window.setView(view.getView());
+
+		window.draw(shape);
+	
+
 		window.display();
-		system("cls");
+	
 
 	}
 
