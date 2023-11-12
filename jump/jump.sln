@@ -5,6 +5,11 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jump", "jump.vcxproj", "{BB19FBD0-AB6F-49D7-8C05-7FCFCE61D26F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "Éléments de solution", "{531AF2B3-AEDA-4BC5-8AA3-49FE182942AF}"
+	ProjectSection(SolutionItems) = preProject
+		a.txt = a.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
