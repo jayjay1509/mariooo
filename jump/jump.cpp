@@ -87,32 +87,6 @@ int main()
 
 
 
-	//Ground ground1;
-	//ground1.position = sf::Vector2f(400, 500);
-	//ground1.shape = sf::RectangleShape(sf::Vector2f(200, 50));
-	//ground1.shape.setFillColor(sf::Color(0, 150, 0));
-	//ground1.shape.setOrigin(ground1.shape.getSize().x / 2, ground1.shape.getSize().y / 2);
-	//ground1.shape.setPosition(ground1.position);
-	//grounds.push_back(ground1);
-	//
-	//Ground ground2;
-	//ground2.position = sf::Vector2f(200, 400);
-	//ground2.shape = sf::RectangleShape(sf::Vector2f(100, 50));
-	//ground2.shape.setFillColor(sf::Color(0, 150, 0));
-	//ground2.shape.setOrigin(ground2.shape.getSize().x / 2, ground2.shape.getSize().y / 2);
-	//ground2.shape.setPosition(ground2.position);
-	//grounds.push_back(ground2);
-	//
-	//
-	//Ground ground3;
-	//ground3.position = sf::Vector2f(600, 600);
-	//ground3.shape = sf::RectangleShape(sf::Vector2f(1000, 50));
-	//ground3.shape.setFillColor(sf::Color(0, 0, 150));
-	//ground3.shape.setOrigin(ground3.shape.getSize().x / 2, ground3.shape.getSize().y / 2);
-	//ground3.shape.setPosition(ground3.position);
-	//grounds.push_back(ground3);
-
-
 	sf::Vector2f speed = sf::Vector2f(0, 0);
 	sf::Vector2f acceleration = sf::Vector2f(0, 0);
 	sf::Vector2f jumpForce;
@@ -122,7 +96,9 @@ int main()
 	sf::Vector2f acceleration1 = sf::Vector2f(0, 0);
 	sf::Vector2f jumpForce1;
 	sf::Vector2f moveForce1;
-		
+
+	bool is_collisioning = false;
+	bool is_collisioning1 = false;
 
 	while (window.isOpen())
 	{
@@ -133,12 +109,21 @@ int main()
 		//bool isGrounded = shape.getPosition().y >= (window.getSize().y - shape.getSize().y / 2);
 		bool isGrounded = false;
 		bool isGrounded1 = false;
+
+		std::vector<int> collidingShapesIndices;
 		
 
 		for (Ground& ground : grounds) {
 			if (shape.getGlobalBounds().intersects(ground.shape.getGlobalBounds())) {
 				isGrounded = true;
+				is_collisioning = true;
 
+			}
+		}
+
+		for (size_t i = 0; i < grounds.size(); ++i) {
+			if (shape.getGlobalBounds().intersects(grounds[i].shape.getGlobalBounds())) {
+				collidingShapesIndices.push_back(i);
 			}
 		}
 
@@ -260,7 +245,7 @@ int main()
 		}
 		else
 		{
-			speed.y = -0.5;
+			//speed.y = -0.1;
 		}
 
 		if (!isGrounded1)
@@ -301,8 +286,43 @@ int main()
 		{
 			speed1.x *= 0.95f;
 		}
-		previousPosition = shape.getPosition();
-		previousPosition = shape1.getPosition();
+
+		if (is_collisioning) {
+			for (int index : collidingShapesIndices) {
+				Ground& ground = grounds[index];
+				sf::Vector2f distance = ground.shape.getPosition() - shape.getPosition();
+
+				float d_max = ground.shape.getSize().y / 2.0f + shape.getSize().y / 2.0f;
+				float d_y = distance.y;
+
+				float d_max_for_x = ground.shape.getSize().x / 2.0f + shape.getSize().x / 2.0f;
+				float d_x = distance.x;
+
+				// Vérifier les positions x et y
+				if (d_x < d_y) {
+					if (d_x < 0) {
+						shape.move(sf::Vector2f(d_x - d_max_for_x, 0)); // Téléportation vers la gauche
+					}
+					else {
+						shape.move(sf::Vector2f(d_max_for_x - d_x, 0)); // Téléportation vers la droite
+					}
+				}
+				else {
+					if (d_y < 0) {
+						shape.move(sf::Vector2f(0, d_y - d_max)); // Téléportation vers le haut
+					}
+					else {
+						shape.move(sf::Vector2f(0, d_max - d_y)); // Téléportation vers le bas
+					}
+				}
+			}
+		}
+
+
+
+
+
+		
 
 		shape.setPosition(shape.getPosition() + speed);
 		shape1.setPosition(shape1.getPosition() + speed1);
