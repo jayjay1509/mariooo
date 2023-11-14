@@ -21,6 +21,7 @@ public:
     };
 
     int cells[TILEMAP_WIDTH * TILEMAP_HEIGHT] = {0}; // initialize a bool array with all zeroes (false).
+    int cell[TILEMAP_WIDTH * TILEMAP_HEIGHT] = { 0 }; // initialize a bool array with all zeroes (false).
    
 
     bool InBounds(sf::Vector2i coords);

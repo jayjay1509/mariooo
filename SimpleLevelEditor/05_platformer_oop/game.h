@@ -14,6 +14,7 @@ public:
 	bool checkpoint = false;
 	bool you_win = false;
 	bool you_lose = false;
+	bool coin = false;
 
 	Tilemap tilemap_;
 	Tilemap tilemap_coin;
@@ -67,6 +68,9 @@ public:
 
 	sf::Sprite heart_empty_s;
 	sf::Texture heart_empty_t;
+
+	sf::Sprite coin_s;
+	sf::Texture coin_t;
 
 	
 

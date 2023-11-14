@@ -4,6 +4,12 @@
 
 sf::View newView;
 int life = 3;
+int index_coin;
+int index_frame_coin;
+
+
+std::vector<sf::Sprite> sprites;
+std::vector<sf::Sprite> sprites2;
 
 void Game::init()
 {
@@ -159,6 +165,31 @@ void Game::init()
 		__debugbreak();
 	}
 
+
+
+
+if (coin_t.loadFromFile("data/sprites/coin.png")) 
+{
+    // Largeur d'un sprite individuel
+    const int spriteWidth = 20;
+
+    for (int i = 0; i < coin_t.getSize().x / spriteWidth; i++) {
+        sf::Sprite sprite;
+        sprite.setTexture(coin_t);
+        sprite.setTextureRect(sf::IntRect(i * spriteWidth, 0, spriteWidth, coin_t.getSize().y));
+        sprite.setPosition(6450, 1000);
+		sprite.setScale(2.5, 2.5);
+		
+
+        sprites.push_back(sprite);
+    }
+}
+else
+{
+    // En cas d'échec du chargement de la texture, vous pouvez déclencher un point d'arrêt pour le débogage
+    __debugbreak();
+}
+
 	
 
 	//tile_shape_.setOutlineColor(sf::Color(245, 213, 127));
@@ -231,6 +262,11 @@ void Game::update()
 		--life;
 	}
 
+	if (player_pos_.x > 6450&&player_pos_.x<6500&&player_pos_.y>1000&&player_pos_.y<1050 )
+	{
+		coin = true;
+	}
+
 	if (life <= 0)
 	{
 		you_lose = true;
@@ -242,7 +278,7 @@ void Game::update()
 		checkpoint = true;
 	}
 
-	if (player_pos_.x >= 7500)
+	if (player_pos_.x >= 7500&& coin)
 	{
 		you_win = true;
 	}
@@ -318,11 +354,13 @@ void Game::update()
 		grounded = true;
 	}
 
-	if (player_pos_.y <= limit_y_low + player_size.y) {
+	if (player_pos_.y <= limit_y_low + player_size.y) 
+	{
 		player_pos_.y = limit_y_low + player_size.y;
 		player_vel_.y = 0;
 	}
-
+	
+	
 
 	 
 	// Determine tile coordinates that the mouse is hovering
@@ -368,7 +406,7 @@ void Game::update()
 		tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::Kright;
 	}
 
-
+	
 
 
 	// clear the window with black color
@@ -429,6 +467,9 @@ void Game::update()
 			//}
 		}
 	}
+
+
+
 	
 	// Draw the HUD above everything else
 	window_.draw(hud_);
@@ -459,6 +500,33 @@ void Game::update()
 	// draw selection cursor
 	cursor_shape_.setPosition(TILE_SIZE_PX * mouseCoord_TilesRelative.x, TILE_SIZE_PX * mouseCoord_TilesRelative.y);
 	window_.draw(cursor_shape_);
+
+
+	if (!coin)
+	{
+		window_.draw(sprites[index_coin]);
+	}
+	else
+	{
+		sprites[index_coin].setScale(1, 1);
+		sprites[index_coin].setPosition(newView.getCenter().x - 10, newView.getCenter().y - window_.getSize().y / 2 + 20);
+		window_.draw(sprites[index_coin]);
+	}
+	
+	
+
+	index_frame_coin++;
+
+	if (index_frame_coin == 6)
+	{
+		index_frame_coin = 0;
+		index_coin++;
+	}
+
+	if (index_coin == 9)
+	{
+		index_coin = 0;
+	}
 
 	// draw player
 	player_box_shape_.setPosition(player_pos_.x, player_pos_.y);
