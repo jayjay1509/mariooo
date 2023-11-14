@@ -299,7 +299,7 @@ int main()
 				float d_x = distance.x;
 
 				// Vérifier les positions x et y
-				if (d_x < d_y) {
+				if (d_y < d_x) {
 					if (d_x < 0) {
 						shape.move(sf::Vector2f(d_x - d_max_for_x, 0)); // Téléportation vers la gauche
 					}
