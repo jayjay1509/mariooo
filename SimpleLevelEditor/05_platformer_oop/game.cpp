@@ -36,7 +36,7 @@ void Game::init()
 	if (tile_texture2.loadFromFile("data/sprites/tile_0041.png"))
 	{
 		tile_sprite2.setTexture(tile_texture2);
-		tile_sprite.setScale(TILE_SIZE_PX / (float)tile_texture.getSize().x, TILE_SIZE_PX / (float)tile_texture.getSize().y);
+		tile_sprite.setScale(TILE_SIZE_PX / (float)tile_texture2.getSize().x, TILE_SIZE_PX / (float)tile_texture2.getSize().y);
 	}
 	else
 	{
@@ -46,7 +46,27 @@ void Game::init()
 	if (tile_texture3.loadFromFile("data/sprites/tile_0043.png"))
 	{
 		tile_sprite3.setTexture(tile_texture3);
-		tile_sprite.setScale(TILE_SIZE_PX / (float)tile_texture.getSize().x, TILE_SIZE_PX / (float)tile_texture.getSize().y);
+		tile_sprite.setScale(TILE_SIZE_PX / (float)tile_texture3.getSize().x, TILE_SIZE_PX / (float)tile_texture3.getSize().y);
+	}
+	else
+	{
+		__debugbreak();
+	}
+
+	if (ground_t.loadFromFile("data/sprites/tile_0122.png"))
+	{
+		ground_s.setTexture(ground_t);
+		ground_s.setScale(TILE_SIZE_PX / (float)ground_t.getSize().x, TILE_SIZE_PX / (float)ground_t.getSize().y);
+	}
+	else
+	{
+		__debugbreak();
+	}
+
+	if (spike_t.loadFromFile("data/sprites/tile_0068.png"))
+	{
+		spike_s.setTexture(spike_t);
+		spike_s.setScale(TILE_SIZE_PX / (float)spike_t.getSize().x, TILE_SIZE_PX / (float)spike_t.getSize().y);
 	}
 	else
 	{
@@ -168,27 +188,109 @@ void Game::init()
 
 
 
-if (coin_t.loadFromFile("data/sprites/coin.png")) 
-{
-    // Largeur d'un sprite individuel
-    const int spriteWidth = 20;
+	if (coin_t.loadFromFile("data/sprites/coin.png")) 
+		{
+	    // Largeur d'un sprite individuel
+	    const int spriteWidth = 20;
 
-    for (int i = 0; i < coin_t.getSize().x / spriteWidth; i++) {
-        sf::Sprite sprite;
-        sprite.setTexture(coin_t);
-        sprite.setTextureRect(sf::IntRect(i * spriteWidth, 0, spriteWidth, coin_t.getSize().y));
-        sprite.setPosition(6450, 1000);
-		sprite.setScale(2.5, 2.5);
-		
+		for (int i = 0; i < coin_t.getSize().x / spriteWidth; i++) {
+	        sf::Sprite sprite;
+	        sprite.setTexture(coin_t);
+	        sprite.setTextureRect(sf::IntRect(i * spriteWidth, 0, spriteWidth, coin_t.getSize().y));
+	        sprite.setPosition(6450, 1000);
+			sprite.setScale(2.5, 2.5);
+			
 
-        sprites.push_back(sprite);
-    }
-}
-else
-{
-    // En cas d'échec du chargement de la texture, vous pouvez déclencher un point d'arrêt pour le débogage
-    __debugbreak();
-}
+	        sprites.push_back(sprite);
+	    }
+		}
+	else
+	{
+	    // En cas d'échec du chargement de la texture, vous pouvez déclencher un point d'arrêt pour le débogage
+	    __debugbreak();
+	}
+
+	if (sound_jump_b.loadFromFile("data/song/Jump 1.wav"))
+	{
+		sound_jump_s.setBuffer(sound_jump_b);
+		sound_jump_s.setVolume(30);
+	}
+	else
+	{
+		__debugbreak();
+	}
+
+	if (sound_coin_b.loadFromFile("data/song/Success 1.wav"))
+	{
+		sound_coin_s.setBuffer(sound_coin_b);
+		sound_coin_s.setVolume(100);
+	}
+	else
+	{
+		__debugbreak();
+	}
+
+	if (sound_cheakpoint_b.loadFromFile("data/song/chekpoint.wav"))
+	{
+		sound_cheakpoint_s.setBuffer(sound_cheakpoint_b);
+		sound_cheakpoint_s.setVolume(100);
+	}
+	else
+	{
+		__debugbreak();
+	}
+
+	if (sound_dead_b.loadFromFile("data/song/Game Over 1.wav"))
+	{
+		sound_dead_s.setBuffer(sound_dead_b);
+		sound_dead_s.setVolume(100);
+	}
+	else
+	{
+		__debugbreak();
+	}
+
+	if (sound_you_lose_b.loadFromFile("data/song/Mario death.wav"))
+	{
+		sound_you_lose_s.setBuffer(sound_you_lose_b);
+		sound_you_lose_s.setVolume(100);
+	}
+	else
+	{
+		__debugbreak();
+	}
+
+	if (sound_you_lose_b.loadFromFile("data/song/Mario death.wav"))
+	{
+		sound_you_lose_s.setBuffer(sound_you_lose_b);
+		sound_you_lose_s.setVolume(100);
+	}
+	else
+	{
+		__debugbreak();
+	}
+
+	if (sound_you_win_b.loadFromFile("data/song/Undertale.wav"))
+	{
+		sound_you_win_s.setBuffer(sound_you_win_b);
+		sound_you_win_s.setVolume(100);
+	}
+	else
+	{
+		__debugbreak();
+	}
+
+	if (sound_main_b.loadFromFile("data/song/main.wav"))
+	{
+		sound_main_s.setBuffer(sound_main_b);
+		sound_main_s.setVolume(30);
+	}
+	else
+	{
+		__debugbreak();
+	}
+
+	
 
 	
 
@@ -217,9 +319,8 @@ else
 
 
 	hud_.StartChrono();
-
+	sound_main_s.play();
 }
-
 
 
 
@@ -239,13 +340,42 @@ void Game::update()
 
 
 	newView = window_.getView();
-	newView.setCenter(player_pos_);
+
+	if (player_pos_.y >= 950)
+	{
+		newView.setCenter(player_pos_.x, 950);
+		if (player_pos_.x <= 1000)
+		{
+			newView.setCenter(1000, 950);
+		}
+	}
+	else if (player_pos_.y <= 600)
+	{
+		newView.setCenter(player_pos_.x, 600);
+		if (player_pos_.x <= 1000)
+		{
+			newView.setCenter(1000, 600);
+		}
+	}
+	
+	else if (player_pos_.x <= 1000)
+	{
+		newView.setCenter(1000, player_pos_.y);
+	}
+	
+	else
+	{
+		newView.setCenter(player_pos_);
+	}
 	window_.setView(newView);
 
 	const sf::View& currentView = window_.getView();
 	hud_.Init(window_);
 
 	hud_.Update(window_.getView());
+
+	
+	
 
 	
 
@@ -260,27 +390,61 @@ void Game::update()
 			player_pos_ = sf::Vector2f(1000, 949);
 		}
 		--life;
+		if (life >= 1)
+		{
+			sound_dead_s.play();
+		}
+		
 	}
 
 	if (player_pos_.x > 6450&&player_pos_.x<6500&&player_pos_.y>1000&&player_pos_.y<1050 )
 	{
 		coin = true;
+		if (coin_musik == 0)
+		{
+				sound_coin_s.play();
+				coin_musik = 1;
+		}
+		
 	}
+
+	
 
 	if (life <= 0)
 	{
 		you_lose = true;
+		if (you_dead_musik == 0)
+		{
+			sound_main_s.stop();
+			sound_you_lose_s.play();
+			you_dead_musik = 1;
+		}
 	}
+
+	
 
 
 	if (player_pos_.x >= 3450)
 	{
 		checkpoint = true;
+		if (cheakpoint_musik == 0)
+		{
+			sound_cheakpoint_s.play();
+			cheakpoint_musik = 1;
+		}
 	}
+
+	
 
 	if (player_pos_.x >= 7500&& coin)
 	{
 		you_win = true;
+		if (you_win_musik == 0 )
+		{
+			sound_main_s.stop();
+			sound_you_win_s.play();
+			you_win_musik = 1;
+		}
 	}
 
 
@@ -312,6 +476,11 @@ void Game::update()
 		delta += sf::Vector2f(kPlayerSpeed, 0);
 	}
 
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+	
+		levelediting = !levelediting;
+	}
+
 	// Cancel vertical velocity if grounded
 	if (grounded) {
 		player_vel_.y = 0;
@@ -319,10 +488,12 @@ void Game::update()
 
 	// jumping
 	bool jump_key_is_down = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
-	if (jump_key_is_down && grounded) {
+	if (jump_key_is_down && grounded) 
+	{
 		player_vel_.y = kJumpSpeed;
+		sound_jump_s.play();
 	}
-
+	
 
 	// Falling speed limit
 	if (player_vel_.y > kFallLimit) {
@@ -372,43 +543,66 @@ void Game::update()
 
 
 	// Editor interaction
-	bool mouse_left = sf::Mouse::isButtonPressed(sf::Mouse::Left);
-	bool mouse_right = sf::Mouse::isButtonPressed(sf::Mouse::Right);
-	bool shift_down = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
+	
+	if (levelediting)
+	{
 
-	if (mouse_left || mouse_right) {
-		// Check the coordinates are inside our tilemap. Important! Otherwise we could write on unrelated memory and potentially corrupt or crash the program.
-		if (tilemap_.InBounds(mouseCoord_TilesRelative)) 
-		{
-			if(mouse_left)
+		bool mouse_left = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+		bool mouse_right = sf::Mouse::isButtonPressed(sf::Mouse::Right);
+		bool shift_down = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
+
+		if (mouse_left || mouse_right) {
+			// Check the coordinates are inside our tilemap. Important! Otherwise we could write on unrelated memory and potentially corrupt or crash the program.
+			if (tilemap_.InBounds(mouseCoord_TilesRelative))
 			{
-				if(shift_down)
-					// Set the hovered tile to true or false depending on the pressed mouse button.
-					tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::kRed;
+				if (mouse_left)
+				{
+					if (shift_down)
+						// Set the hovered tile to true or false depending on the pressed mouse button.
+						tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::kRed;
+					else
+						// Set the hovered tile to true or false depending on the pressed mouse button.
+						tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::kYellow;
+
+				}
 				else
-					// Set the hovered tile to true or false depending on the pressed mouse button.
-					tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::kYellow;
-
-			}else
-			{
-				tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::kNoTile;
+				{
+					tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::kNoTile;
+				}
 			}
 		}
-	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+		{
+			tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::kRed;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+		{
+			tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::Kright;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+		{
+			tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::Kspike;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
+		{
+			tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::Kground;
+		}
+	}
+	if (windowResized)
 	{
-		tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::kRed;
+		you_lose_s.setScale(window_.getSize().x / 1000, window_.getSize().y / 800);
+		you_win_s.setScale(2.4,2.4); // impossible to set scale with the get.size for this asset so I hope you have the same screen
 	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+	else
 	{
-		tilemap_.cells[mouseCoord_TilesRelative.y * TILEMAP_WIDTH + mouseCoord_TilesRelative.x] = (int)Tilemap::TileType::Kright;
+		you_lose_s.setScale(0.6, 0.6);
+		you_win_s.setScale(1.2, 1.2);
 	}
-
 	
-
-
 	// clear the window with black color
 	window_.clear(sf::Color::Black);
 	
@@ -452,6 +646,14 @@ void Game::update()
 				tile_sprite.setTexture(tile_texture3);
 				window_.draw(tile_sprite);
 				break;
+			case Tilemap::TileType::Kground:
+				tile_sprite.setTexture(ground_t);
+				window_.draw(tile_sprite);
+				break;
+			case Tilemap::TileType::Kspike:
+				tile_sprite.setTexture(spike_t);
+				window_.draw(tile_sprite);
+				break;
 
 			case Tilemap::TileType::kNoTile:
 			default:
@@ -488,19 +690,23 @@ void Game::update()
 
 
 	// Visualize limits
-	debug_limit_shape_vertical_.setPosition(limit_x_high, 0);
-	window_.draw(debug_limit_shape_vertical_);
-	debug_limit_shape_vertical_.setPosition(limit_x_low, 0);
-	window_.draw(debug_limit_shape_vertical_);
-	debug_limit_shape_horizontal_.setPosition(0, limit_y_high);
-	window_.draw(debug_limit_shape_horizontal_);
-	debug_limit_shape_horizontal_.setPosition(0, limit_y_low);
-	window_.draw(debug_limit_shape_horizontal_);
+	if (levelediting)
+	{
 
-	// draw selection cursor
-	cursor_shape_.setPosition(TILE_SIZE_PX * mouseCoord_TilesRelative.x, TILE_SIZE_PX * mouseCoord_TilesRelative.y);
-	window_.draw(cursor_shape_);
 
+		debug_limit_shape_vertical_.setPosition(limit_x_high, 0);
+		window_.draw(debug_limit_shape_vertical_);
+		debug_limit_shape_vertical_.setPosition(limit_x_low, 0);
+		window_.draw(debug_limit_shape_vertical_);
+		debug_limit_shape_horizontal_.setPosition(0, limit_y_high);
+		window_.draw(debug_limit_shape_horizontal_);
+		debug_limit_shape_horizontal_.setPosition(0, limit_y_low);
+		window_.draw(debug_limit_shape_horizontal_);
+
+		// draw selection cursor
+		cursor_shape_.setPosition(TILE_SIZE_PX * mouseCoord_TilesRelative.x, TILE_SIZE_PX * mouseCoord_TilesRelative.y);
+		window_.draw(cursor_shape_);
+	}
 
 	if (!coin)
 	{

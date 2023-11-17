@@ -2,19 +2,27 @@
 
 #include <chrono>
 #include <iostream>
+#include <SFML/Audio.hpp>
 
 #include "tilemap.h"
 #include "HUD.h"
 
+ 
+
 class Game
 {
 public:
-
+	bool windowResized = false;
+	bool levelediting = false;
 	bool grounded;
 	bool checkpoint = false;
 	bool you_win = false;
 	bool you_lose = false;
 	bool coin = false;
+	int coin_musik = 0;
+	int cheakpoint_musik = 0;
+	int you_dead_musik = 0;
+	int you_win_musik = 0;
 
 	Tilemap tilemap_;
 	Tilemap tilemap_coin;
@@ -69,10 +77,41 @@ public:
 	sf::Sprite heart_empty_s;
 	sf::Texture heart_empty_t;
 
-	sf::Sprite coin_s;
+	sf::Sprite coin_s; 
 	sf::Texture coin_t;
 
-	
+	sf::Sprite ground_s;
+	sf::Texture ground_t;
+
+	sf::Sprite spike_s;
+	sf::Texture spike_t;
+
+
+	//--------------------------------------------------------------------------------------------------------------
+	// sound
+
+	sf::SoundBuffer sound_jump_b; 
+	sf::Sound sound_jump_s;
+
+	sf::SoundBuffer sound_coin_b; 
+	sf::Sound sound_coin_s;
+
+	sf::SoundBuffer sound_cheakpoint_b; 
+	sf::Sound sound_cheakpoint_s;
+
+	sf::SoundBuffer sound_dead_b; 
+	sf::Sound sound_dead_s;
+
+	sf::SoundBuffer sound_you_lose_b; 
+	sf::Sound sound_you_lose_s;
+
+
+	sf::SoundBuffer sound_you_win_b;  
+	sf::Sound sound_you_win_s;
+
+
+	sf::SoundBuffer sound_main_b;  
+	sf::Sound sound_main_s;
 
 	std::chrono::high_resolution_clock::time_point frameStart;
 	std::chrono::high_resolution_clock::time_point frameEnd;
@@ -85,5 +124,7 @@ public:
 	void update();
 
 	void view();
+
+	
 };
 

@@ -15,8 +15,8 @@ public:
     sf::View getView() const {
         return view;
     }
-
-private:
     sf::View view;
+
+    
 };
 

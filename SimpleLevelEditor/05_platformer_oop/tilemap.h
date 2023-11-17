@@ -17,7 +17,9 @@ public:
         kNoTile = 0,
         kYellow,
         kRed,
-        Kright
+        Kright,
+        Kspike,
+        Kground
     };
 
     int cells[TILEMAP_WIDTH * TILEMAP_HEIGHT] = {0}; // initialize a bool array with all zeroes (false).
